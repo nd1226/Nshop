@@ -1,0 +1,123 @@
+﻿<!--Header Content-->
+<section class="content-header">
+    <h1>
+        Cập nhật danh mục: {{productCategory.Name}}
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Trang chủ</a></li>
+        <li><a href="#">Sản phẩm</a></li>
+        <li ui-sref="product_categories">Danh mục</li>
+        <li class="active">Cập nhật</li>
+    </ol>
+</section>
+
+<!--Main Content-->
+<section class="content">
+    <div class="box box-info">
+        <div class="box-header with-border">
+            <h3 class="box-title">{{productCategory.Name}}</h3>
+        </div>
+        <!-- /.box-header -->
+        <!-- form start -->
+        <form class="form-horizontal" novalidate name="frmUpdateProductCategory" role="form" ng-submit="UpdateProductCategory()">
+            <div class="box-body">
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">Tên danh mục</label>
+                    <div class="col-sm-10">
+                        <input required type="text" class="form-control" ng-change="GetSeoTitle()" name="name" ng-model="productCategory.Name">
+                        <span ng-show="frmUpdateProductCategory.name.$invalid" class="text-red">Tên danh mục không được bỏ trống</span>
+                        <span ng-show="frmUpdateProductCategory.name.$error.maxlength" class="text-red">Tên danh mục không quá 256 ký tự</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputPassword3" class="col-sm-2 control-label">Tiêu đề SEO</label>
+
+                    <div class="col-sm-10">
+                        <input required ng-maxlength="256" type="text" class="form-control" name="alias" ng-model="productCategory.Alias">
+                        <span ng-show="frmUpdateProductCategory.alias.$invalid" class="text-red">Tiêu đề SEO không được bỏ trống</span>
+                        <span ng-show="frmUpdateProductCategory.alias.$error.maxlength" class="text-red">Tiêu đề SEO không quá 256 ký tự</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputPassword3" class="col-sm-2 control-label">Mô tả</label>
+
+                    <div class="col-sm-10">
+                        <input ng-maxlength="500" type="text" class="form-control" name="description" ng-model="productCategory.Description">
+                        <span ng-show="frmUpdateProductCategory.description.$error.maxlength" class="text-red">Mô tả không quá 500 ký tự</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputPassword3" class="col-sm-2 control-label">Danh mục cha</label>
+
+                    <div class="col-sm-10">
+                        <select class="form-control"
+                                name="parentId"
+                                ng-model="productCategory.ParentId"
+                                ng-options="option.ID as option.Name for option in parentCategories">
+                            <option value="" disabled>Danh mục gốc</option>
+                        </select>
+                        <input name="parentId" type="hidden" ng-model="productCategory.ParentId" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputPassword3" class="col-sm-2 control-label">Thứ tự</label>
+
+                    <div class="col-sm-10">
+                        <input type="number" class="form-control" ng-model="productCategory.DisplayOrder">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputPassword3" class="col-sm-2 control-label">Hình ảnh</label>
+
+                    <div class="col-sm-10">
+                        <input ng-maxlength="256" name="image" type="text" class="form-control" ng-model="productCategory.Image">
+                        <span ng-show="frmUpdateProductCategory.image.$error.maxlength" class="text-red">Hình ảnh không quá 256 ký tự</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputPassword3" class="col-sm-2 control-label">Meta Keyword</label>
+
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" ng-model="productCategory.MetaKeyword">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputPassword3" class="col-sm-2 control-label">Meta Description</label>
+
+                    <div class="col-sm-10">
+                        <textarea type="number" class="form-control" ng-model="productCategory.MetaDescription"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox"
+                                       name="status"
+                                       ng-checked="productCategory.Status"
+                                       ng-model="productCategory.Status" /> Kích hoạt
+                            </label>
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox"
+                                       name="status"
+                                       ng-checked="productCategory.HomeFlag"
+                                       ng-model="productCategory.HomeFlag" /> Hiển thị trang chủ
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.box-body -->
+            <div class="box-footer">
+                <button ui-sref="product_categories" class="btn btn-default pull-left">Hủy</button>
+                <button ng-disabled="frmUpdateProductCategory.$invalid" type="submit" class="btn btn-success pull-right">Lưu</button>
+            </div>
+            <!-- /.box-footer -->
+        </form>
+    </div>
+</section>
