@@ -40,10 +40,24 @@
             });
         }
 
+        function del(url, data, succes, failure) {
+            $http.delete(url, data).then(function (result) {
+                succes(result);
+            }, function (error) {
+                if (error.status === 401) {
+                    notificationService.displayError("Authenticate is require");
+                }
+                else if (failure != null) {
+                    failure(error);
+                }
+            });
+        }
+
         return {
             get: get,
             post: post,
-            put: put
-        }
+            put: put,
+            del: del
+        };
     }
 })(angular.module('nshop.common'));

@@ -10,6 +10,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using System.Web.Script.Serialization;
 
 namespace NShop.Web.Api
 {
@@ -28,9 +29,9 @@ namespace NShop.Web.Api
 
         [Route("getall")]
         [HttpGet]
-        public HttpResponseMessage GetAll(HttpRequestMessage request,string keyword,int page,int pageSize = 20)
+        public HttpResponseMessage GetAll(HttpRequestMessage request, string keyword, int page, int pageSize = 20)
         {
-            return CreateHttpRespone(request, () => 
+            return CreateHttpRespone(request, () =>
             {
                 int totalRow = 0;
                 var model = _productCategoryService.GetAll(keyword);
@@ -71,7 +72,7 @@ namespace NShop.Web.Api
 
         [Route("getbyid/{id:int}")]
         [HttpGet]
-        public HttpResponseMessage GetById(HttpRequestMessage request,int id)
+        public HttpResponseMessage GetById(HttpRequestMessage request, int id)
         {
             return CreateHttpRespone(request, () =>
             {
@@ -86,7 +87,7 @@ namespace NShop.Web.Api
 
         [Route("create")]
         [HttpPost]
-        public HttpResponseMessage Create(HttpRequestMessage request,ProductCategoryViewModel productCategoryVm)
+        public HttpResponseMessage Create(HttpRequestMessage request, ProductCategoryViewModel productCategoryVm)
         {
             return CreateHttpRespone(request, () =>
              {
@@ -95,14 +96,17 @@ namespace NShop.Web.Api
                  {
                      respone = request.CreateResponse(HttpStatusCode.BadRequest, ModelState);
                  }
-                 var newProductCategory = new ProductCategory();
-                 newProductCategory.UpdateProductCategory(productCategoryVm);
-                 newProductCategory.CreatedDate = DateTime.Now;
-                 _productCategoryService.Add(newProductCategory);
-                 _productCategoryService.Save();
+                 else
+                 {
+                     var newProductCategory = new ProductCategory();
+                     newProductCategory.UpdateProductCategory(productCategoryVm);
+                     newProductCategory.CreatedDate = DateTime.Now;
+                     _productCategoryService.Add(newProductCategory);
+                     _productCategoryService.Save();
 
-                 var responseData = Mapper.Map<ProductCategory, ProductCategoryViewModel>(newProductCategory);
-                 respone = request.CreateResponse(HttpStatusCode.Created, responseData);
+                     var responseData = Mapper.Map<ProductCategory, ProductCategoryViewModel>(newProductCategory);
+                     respone = request.CreateResponse(HttpStatusCode.Created, responseData);
+                 }
                  return respone;
              });
         }
@@ -118,15 +122,70 @@ namespace NShop.Web.Api
                 {
                     respone = request.CreateResponse(HttpStatusCode.BadRequest, ModelState);
                 }
-                var productCategoryId = _productCategoryService.GetById(productCategoryVm.ID);
-                productCategoryId.UpdateProductCategory(productCategoryVm);
-                productCategoryId.UpdatedDate = DateTime.Now;
+                else
+                {
+                    var productCategoryId = _productCategoryService.GetById(productCategoryVm.ID);
+                    productCategoryId.UpdateProductCategory(productCategoryVm);
+                    productCategoryId.UpdatedDate = DateTime.Now;
 
-                _productCategoryService.Update(productCategoryId);
-                _productCategoryService.Save();
+                    _productCategoryService.Update(productCategoryId);
+                    _productCategoryService.Save();
 
-                var responseData = Mapper.Map<ProductCategory, ProductCategoryViewModel>(productCategoryId);
-                respone = request.CreateResponse(HttpStatusCode.Created, responseData);
+                    var responseData = Mapper.Map<ProductCategory, ProductCategoryViewModel>(productCategoryId);
+                    respone = request.CreateResponse(HttpStatusCode.Created, responseData);
+                }
+                return respone;
+            });
+        }
+
+        [Route("delete")]
+        [HttpDelete]
+        public HttpResponseMessage DeleteMulti(HttpRequestMessage request, int id)
+        {
+            return CreateHttpRespone(request, () =>
+            {
+                HttpResponseMessage respone = null;
+                if (!ModelState.IsValid)
+                {
+                    respone = request.CreateResponse(HttpStatusCode.BadRequest, ModelState);
+                }
+                else
+                {
+                    var oldProductCategory = _productCategoryService.Delete(id);
+                    _productCategoryService.Save();
+
+                    var responseData = Mapper.Map<ProductCategory, ProductCategoryViewModel>(oldProductCategory);
+                    respone = request.CreateResponse(HttpStatusCode.Created, responseData);
+                }
+                return respone;
+            });
+        }
+
+        [Route("deletemulti")]
+        [HttpDelete]
+        public HttpResponseMessage Delete(HttpRequestMessage request, string checkedProductCategories)
+        {
+            return CreateHttpRespone(request, () =>
+            {
+                HttpResponseMessage respone = null;
+                if (!ModelState.IsValid)
+                {
+                    respone = request.CreateResponse(HttpStatusCode.BadRequest, ModelState);
+                }
+                else
+                {
+
+                    var lstProductCategory = new JavaScriptSerializer().Deserialize<List<int>>(checkedProductCategories);
+
+                    foreach (var item in lstProductCategory)
+                    {
+                       _productCategoryService.Delete(item);
+                    }
+                    
+                    _productCategoryService.Save();
+
+                    respone = request.CreateResponse(HttpStatusCode.OK, lstProductCategory.Count);
+                }
                 return respone;
             });
         }

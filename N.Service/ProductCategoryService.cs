@@ -13,7 +13,7 @@ namespace N.Service
     {
         ProductCategory Add(ProductCategory ProductCategory);
         void Update(ProductCategory ProductCategory);
-        void Delete(int id);
+        ProductCategory Delete(int id);
         IEnumerable<ProductCategory> GetAll();
         IEnumerable<ProductCategory> GetAll(string keyword);
         IEnumerable<ProductCategory> GetAllByParentId(int parentId);
@@ -38,9 +38,9 @@ namespace N.Service
             _ProductCategoryRepository.Update(ProductCategory);
         }
 
-        public void Delete(int id)
+        public ProductCategory Delete(int id)
         {
-            _ProductCategoryRepository.Delete(id);
+            return _ProductCategoryRepository.Delete(id);
         }
 
         public IEnumerable<ProductCategory> GetAll()
